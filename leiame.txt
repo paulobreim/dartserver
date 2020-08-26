@@ -1,0 +1,61 @@
+Como usar o dart em um servidor sem precisar outra coisa.
+
+Se você quiser criar o projeto do zero, basta seguir essas instruções e pegar somente o arquivo main.dart e pubspec.yaml.
+
+1 - crie uma pasta, por exemplo dartserver
+2 - entre nela: cd dartserver
+3 - execute o comando: stagehand console-full
+se vc não tiver o stagehand ibstalado, pegue aqui: https://pub.dev/packages/stagehand
+4 - copie o main.dart para a pasta bin (esqueça a lib que se usa em flutter)
+5 - copie o pubspec.yaml o local normal dele.
+6 - chame o code. vá no pubspec.yaml e pegeu as libs.
+
+Vá no main.dart e execute o programa F5.
+
+Agora abra seu navegador e digite: localhost:8080/a/b/c
+
+funcionou? legal né.
+
+Agora saia do vscode e vamos compilar o programa
+
+1 - execute o comando: dart2native bin/main.dart -o dartserver
+vai gerar um binário
+execute o programa ./dartserver e faça o mesmo teste na url
+você pode mudar a porta para 8081, por exemplo. ./dartserver --port 8081
+
+Algumas dicas:
+Você pode retornar um json obviamente, basta mudar o ContentType que está no main()
+
+A grande vantagem do compilador é que ele compila estaticamente, então vc pode pegar esse binário e jogar em qualquer máquina e rodar, não precisa levar libs dlls etc e é muit omuito rápido.
+
+Você pode usar no seu programa qualquer coisa como mongoDB, Hasura, fazer uma consulta http em outro servidor etc.
+
+Se você tem um aplicativo em flutter, que consulta um heroku por exemplo, ou outra coisa qualquer, você sempre corre o risco do serviço não estar mais disponível e seus usuários
+vão se complicar.
+Vamos supor que vc consulte uma url do google pra pegar um mapa, por exemplo.
+Ao invés de no seu app flutter vc chamar essa url, pode passar esses dados para o seu servidor dart e ele faz a consulta da url devolvendo o resultado, assim se tiver alguma mudança, você muda no servidor e seus usuários flutter nem vão sentir.
+
+Eu já vivi essa situação no meu app "raio x do imóvel" tem lá uma tela que mostra os valores do IPTU que eu pegava no site da prefeitura. A prefeitura passou a ter um captcha e se eu não tivesse feito desse jeito que falei ai em cima, ia dar pau no app. Então eu apenas mudei no servidor dando uma resposta tipo "<html>Servidor de IPTU indisponível</html>" e nennum usuário teve que reinstalar um app.
+
+Outra vantagem de fazer dessa forma é que você não expoẽ a sua URL no app do celular que poderia ser visto por terceiros se não estiver usando https, embora ele possa olhar o apk.
+
+Uma coisa que pode fazer também para evitar curiosos é colocar um parâmetro na chamada pra ter certeza que foi chamado pelo seu app.
+Exemplo: seu flutter chama:
+https://www.meuservidor.com.br:8080/parametro1/parametron/gTh23764sdkfh34c
+
+Como é um https, não será sniffado e no seu servidor dart, vc simplesmente verifica se esse parâmetro está presente com um simples
+if  (req.uri.path.contains('gTh23764sdkfh34c')) {
+    print('é meu app');
+}
+
+
+
+
+
+
+
+
+
+
+
+
